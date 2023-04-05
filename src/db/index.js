@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const NoteSchema = require("./NotesModel");
 
 module.exports = {
   connect: () => {
@@ -7,4 +8,5 @@ module.exports = {
       .then(() => console.log("Connected to MongoDB"))
       .catch((err) => console.log(err));
   },
+  NoteModel: NoteSchema(mongoose),
 };
