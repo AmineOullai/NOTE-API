@@ -18,3 +18,5 @@ async function main() {
   });
 }
 main();
+
+//"express=>controller=>services=>model" voici le deroulement logique d'une application et pas le contraire

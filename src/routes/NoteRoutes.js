@@ -34,7 +34,7 @@ module.exports = (app) => {
   });
   app.get("/notes/:id", async (req, res, next) => {
     const { id } = req.params;
-    const note = await NoteModel.findById(id);
+    const note = await NoteModel.findById(id); // interessant
 
     if (!note)
       return res.status(404).json({
