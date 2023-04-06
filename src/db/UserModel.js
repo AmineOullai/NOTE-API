@@ -45,6 +45,10 @@ module.exports = (mongoose) => {
     const userObject = user.toObject();
 
     delete userObject.password;
+    delete userObject.__v;
+
+    userObject.id = userObject._id;
+    delete userObject._id;
     return userObject;
   };
   return mongoose.model("User", userSchema);

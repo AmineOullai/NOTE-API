@@ -1,6 +1,8 @@
 //sign up page
 const { z } = require("zod");
 const { UserModel } = require("../db");
+const { generateSessionToken } = require("../services/SessionService");
+
 const registerSchema = z.object({
   body: z.object({
     email: z.string().email(),
@@ -45,9 +47,10 @@ module.exports = (app) => {
         });
         await user.save();
         //TODO : Generate Session Token
+        const session = await generateSessionToken(user);
         return res.status(201).json({
           message: "User Created", // 06 66 484 908
-          data: user,
+          data: { user, session },
         });
       } catch (e) {
         if (e.code === 11000) {
@@ -79,9 +82,10 @@ module.exports = (app) => {
       });
     }
     //TODO : Generate Session Token
+    const session = await generateSessionToken(user);
     return res.status(200).json({
       message: "user is logged in",
-      data: user,
+      data: { user, session },
     });
   });
 };

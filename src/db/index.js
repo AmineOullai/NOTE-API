@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const NoteSchema = require("./NotesModel");
 const userSchema = require("./UserModel");
+const SessionSchema = require("./SessionModel");
 
 module.exports = {
   connect: () => {
@@ -11,4 +12,5 @@ module.exports = {
   },
   NoteModel: NoteSchema(mongoose),
   UserModel: userSchema(mongoose),
+  SessionModel: SessionSchema(mongoose),
 };
