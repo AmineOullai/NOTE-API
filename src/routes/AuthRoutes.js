@@ -2,6 +2,7 @@
 const { z } = require("zod");
 const { UserModel } = require("../db");
 const { generateSessionToken } = require("../services/SessionService");
+const validate = require("../middlewares/validateMiddleware");
 
 const registerSchema = z.object({
   body: z.object({
@@ -17,17 +18,6 @@ const loginSchema = z.object({
     password: z.string().min(8).max(32),
   }),
 });
-
-const validate = (schema) => {
-  return (req, res, next) => {
-    const { error } = schema.safeParse(req);
-
-    if (error) {
-      return res.status(400).json(error);
-    }
-    next();
-  };
-};
 
 module.exports = (app) => {
   /**
