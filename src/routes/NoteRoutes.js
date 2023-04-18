@@ -1,7 +1,9 @@
 const { NoteModel } = require("../db");
+const { requireSession } = require("../middlewares/requireSessionMiddlewares");
 
 module.exports = (app) => {
-  app.post("/notes", async (req, res, next) => {
+  app.post("/notes", requireSession, async (req, res, next) => {
+    const session = res.locals.session;
     const { title, content } = req.body; // se documenter sur les req.body
     if (!content || !title) {
       //voir la libreary ZOD
@@ -18,6 +20,7 @@ module.exports = (app) => {
     const note = await NoteModel.create({
       title: title.trim(),
       content: content.trim(),
+      user: session.user,
     });
 
     return res.status(201).json({
@@ -25,16 +28,24 @@ module.exports = (app) => {
       data: note,
     });
   });
-  app.get("/notes", async (req, res, next) => {
-    const notes = await NoteModel.find({});
+  app.get("/notes", requireSession, async (req, res, next) => {
+    const session = res.locals.session;
+    const notes = await NoteModel.find({
+      user: session.user,
+    });
+
     return res.status(200).json({
       message: "Notes retrieved",
       data: notes,
     });
   });
-  app.get("/notes/:id", async (req, res, next) => {
+  app.get("/notes/:id", requireSession, async (req, res, next) => {
     const { id } = req.params;
-    const note = await NoteModel.findById(id); // interessant
+    const session = res.locals.session;
+    const note = await NoteModel.findOne({
+      _id: id,
+      user: session.user,
+    }); // interessant
 
     if (!note)
       return res.status(404).json({
@@ -45,9 +56,10 @@ module.exports = (app) => {
       data: note,
     });
   });
-  app.put("/notes/:id", async (req, res, next) => {
+  app.put("/notes/:id", requireSession, async (req, res, next) => {
     const { id } = req.params;
     const { title, content } = req.body;
+    const session = res.locals.session;
 
     if (!title && !content) {
       return res.status(400).json({
@@ -60,7 +72,10 @@ module.exports = (app) => {
       });
     }
 
-    const note = await NoteModel.findById(id);
+    const note = await NoteModel.findOne({
+      _id: id,
+      user: session.user,
+    });
 
     if (!note)
       return res.status(404).json({
@@ -71,16 +86,20 @@ module.exports = (app) => {
 
     if (content) note.content = content.trim();
 
-    await note.save;
+    await note.save();
 
     return res.status(200).json({
       message: "Note updated",
       data: note,
     });
   });
-  app.delete("/notes/:id", async (req, res, next) => {
+  app.delete("/notes/:id", requireSession, async (req, res, next) => {
     const { id } = req.params;
-    const note = await NoteModel.findById(id);
+    const session = res.locals.session;
+    const note = await NoteModel.findOne({
+      _id: id,
+      user: session.user,
+    });
 
     if (!note)
       return res.status(404).json({
